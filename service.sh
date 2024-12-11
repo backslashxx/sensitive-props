@@ -29,14 +29,14 @@ replace_value_resetprop ro.build.version.incremental "eng." ""
 
 sh $MODPATH/hourly.sh &
 
-[ ! -f $MODPATH/crontabs ] && {
+[ ! -f $MODPATH/crontabs/root ] && {
 	mkdir -p $MODPATH/crontabs
 	echo "30 * * * * sh /data/adb/modules/sensitive_props/hourly.sh > /dev/null 2>&1 &" | busybox crontab -c $MODPATH/crontabs -
 }
 
 # start crond every time service.sh starts
 # this is what runs our hourly script
-[ -f $MODPATH/crontabs ] && busybox crond -bc $MODPATH/crontabs -L /dev/null > /dev/null 2>&1 &
+[ -d $MODPATH/crontabs ] && busybox crond -bc $MODPATH/crontabs -L /dev/null > /dev/null 2>&1 &
 
 # Realme fingerprint fix
 check_resetprop ro.boot.flash.locked 1
