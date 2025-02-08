@@ -1,5 +1,4 @@
-#!/system/bin/busybox sh
-
+#!/bin/sh
 MODPATH="${0%/*}" # Get the directory where the script is located
 
 # If MODPATH is empty or is not default modules path, use current path
@@ -17,21 +16,6 @@ until [ -d "/sdcard/Android" ]; do sleep 3; done
 
 ### Props ###
 
-# Periodically hexpatch delete custom ROM props
-while true; do
-  hexpatch_deleteprop "LSPosed" \
-    "marketname" "custom.device" "modversion" \
-    "lineage" "aospa" "pixelexperience" "evolution" "pixelos" "pixelage" "crdroid" "crDroid" "aospa" \
-    "aicp" "arter97" "blu_spark" "cyanogenmod" "deathly" "elementalx" "elite" "franco" "hadeskernel" \
-    "morokernel" "noble" "optimus" "slimroms" "sultan" "aokp" "bharos" "calyxos" "calyxOS" "divestos" \
-    "emteria.os" "grapheneos" "indus" "iodéos" "kali" "nethunter" "omnirom" "paranoid" "replicant" \
-    "resurrection" "rising" "remix" "shift" "volla" "icosa" "kirisakura" "infinity" "Infinity"
-  # add more...
-
-  # Wait for 1 hour before the next check.
-  sleep 3600
-done &
-
 # Fix display properties to remove custom ROM references
 replace_value_resetprop ro.build.flavor "lineage_" ""
 replace_value_resetprop ro.build.flavor "userdebug" "user"
@@ -40,6 +24,9 @@ replace_value_resetprop ro.build.display.id "userdebug" "user"
 replace_value_resetprop ro.build.display.id "dev-keys" "release-keys"
 replace_value_resetprop vendor.camera.aux.packagelist "lineageos." ""
 replace_value_resetprop ro.build.version.incremental "eng." ""
+
+# Periodically hexpatch delete custom ROM props
+sh $MODPATH/hourly.sh
 
 # Realme fingerprint fix
 check_resetprop ro.boot.flash.locked 1
